@@ -823,7 +823,14 @@ cv::viz::WCameraPosition::WCameraPosition(const Matx33d &K, double scale, const 
 
     // Assuming that this is an ideal camera (c_y and c_x are at the center of the image)
     double fovy = 2.0 * atan2(c_y, f_y) * 180 / CV_PI;
-    double aspect_ratio = f_y / f_x;
+    
+    // xiangyun: This seems wrong
+    //double aspect_ratio = f_y / f_x;
+
+    // xiangyun: my fix
+    double c_x = K(0, 2);
+    double fovx = 2.0 * atan2(c_x, f_x) * 180 / CV_PI;
+    double aspect_ratio = tan(fovx * 0.5 * CV_PI / 180) / tan(fovy * 0.5 * CV_PI / 180);
 
     vtkSmartPointer<vtkPolyData> polydata = CameraPositionUtils::createFrustum(aspect_ratio, fovy, scale);
     VtkUtils::FillScalars(polydata, color);
